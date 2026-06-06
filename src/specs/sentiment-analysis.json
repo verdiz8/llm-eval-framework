@@ -1,0 +1,55 @@
+{
+  "name": "Sentiment Analysis — LLM Classification Quality",
+  "description": "Validates that an LLM correctly classifies text sentiment and returns structured results. Demonstrates the framework applied to a different domain (NLP classification) beyond question extraction.",
+  "model": "claude-sonnet-4-6",
+  "endpoint": "https://api.anthropic.com/v1/messages",
+  "apiKey": "$ANTHROPIC_API_KEY",
+  "thresholds": {
+    "overallPass": 80,
+    "perCriterionPass": 60
+  },
+  "tests": [
+    {
+      "id": "sentiment-clear-positive",
+      "description": "Clearly positive review should classify as positive with high confidence",
+      "input": "Classify the sentiment of this product review: 'Absolutely fantastic! The build quality is outstanding and it works flawlessly. Highly recommend.' Return JSON with sentiment and confidence.",
+      "expected": {
+        "sentiment": "positive",
+        "confidence": 0.95
+      },
+      "criteria": ["formatCompliance", "semanticSimilarity"],
+      "expectedSchema": {
+        "sentiment": "string",
+        "confidence": "number"
+      }
+    },
+    {
+      "id": "sentiment-clear-negative",
+      "description": "Clearly negative review should classify as negative",
+      "input": "Classify the sentiment of this product review: 'Terrible experience. The product broke after two days and customer service was unhelpful. Waste of money.' Return JSON with sentiment and confidence.",
+      "expected": {
+        "sentiment": "negative",
+        "confidence": 0.9
+      },
+      "criteria": ["formatCompliance", "semanticSimilarity"],
+      "expectedSchema": {
+        "sentiment": "string",
+        "confidence": "number"
+      }
+    },
+    {
+      "id": "sentiment-ambiguous-neutral",
+      "description": "Mixed/neutral review should classify as neutral with moderate confidence",
+      "input": "Classify the sentiment of this product review: 'The product is okay. It does what it says but nothing special. Delivery was on time.' Return JSON with sentiment and confidence.",
+      "expected": {
+        "sentiment": "neutral",
+        "confidence": 0.7
+      },
+      "criteria": ["formatCompliance"],
+      "expectedSchema": {
+        "sentiment": "string",
+        "confidence": "number"
+      }
+    }
+  ]
+}

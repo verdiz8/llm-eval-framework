@@ -1,0 +1,91 @@
+{
+  "name": "Question Bank — LLM Extraction Quality",
+  "description": "Validates that Claude correctly extracts structured questions from Cambridge O-Level Computer Science past paper paragraphs. This is the real eval suite that runs against the Presidency Question Bank pipeline.",
+  "model": "claude-sonnet-4-6",
+  "endpoint": "https://api.anthropic.com/v1/messages",
+  "apiKey": "$ANTHROPIC_API_KEY",
+  "thresholds": {
+    "overallPass": 80,
+    "perCriterionPass": 60
+  },
+  "tests": [
+    {
+      "id": "qb-basic-extraction",
+      "description": "Basic question with mark allocation",
+      "input": "1. State two reasons why a computer uses binary rather than denary for calculations. [2]",
+      "expected": {
+        "question": "State two reasons why a computer uses binary rather than denary for calculations.",
+        "marks": 2,
+        "topic": "Data Representation",
+        "difficulty": "easy"
+      },
+      "criteria": ["fuzzyMatch", "formatCompliance"],
+      "expectedSchema": {
+        "question": "string",
+        "marks": "number",
+        "topic": "string",
+        "difficulty": "string"
+      }
+    },
+    {
+      "id": "qb-code-block",
+      "description": "Question containing a code snippet",
+      "input": "2. Study the following Python code: x = 5; y = x + 3; print(y). State the output of this program. [1]",
+      "expected": {
+        "question": "Study the following Python code: x = 5; y = x + 3; print(y). State the output of this program.",
+        "marks": 1,
+        "topic": "Programming Concepts",
+        "difficulty": "easy",
+        "hasCode": true
+      },
+      "criteria": ["fuzzyMatch", "formatCompliance", "hallucinationCheck"],
+      "sourceMaterial": "Study the following Python code: x = 5; y = x + 3; print(y). State the output of this program. [1]",
+      "expectedSchema": {
+        "question": "string",
+        "marks": "number",
+        "topic": "string",
+        "difficulty": "string",
+        "hasCode": "boolean"
+      }
+    },
+    {
+      "id": "qb-multi-part",
+      "description": "Multi-part question with sub-sections",
+      "input": "3. (a) Define the term 'algorithm'. [1] (b) A programmer needs to sort a list of 1000 numbers. Explain why a bubble sort would be inefficient for this task. [3]",
+      "expected": {
+        "question": "Define the term 'algorithm'. A programmer needs to sort a list of 1000 numbers. Explain why a bubble sort would be inefficient for this task.",
+        "marks": 4,
+        "topic": "Algorithms",
+        "difficulty": "medium",
+        "parts": ["Define algorithm", "Explain bubble sort inefficiency"]
+      },
+      "criteria": ["fuzzyMatch", "formatCompliance"],
+      "expectedSchema": {
+        "question": "string",
+        "marks": "number",
+        "topic": "string",
+        "difficulty": "string",
+        "parts": ["array"]
+      }
+    },
+    {
+      "id": "qb-hallucination-guard",
+      "description": "Verify the model doesn't invent mark schemes",
+      "input": "4. Convert the denary number 42 to binary. Show your working. [2]",
+      "expected": {
+        "question": "Convert the denary number 42 to binary. Show your working.",
+        "marks": 2,
+        "topic": "Data Representation",
+        "difficulty": "easy"
+      },
+      "criteria": ["hallucinationCheck", "formatCompliance"],
+      "sourceMaterial": "Convert the denary number 42 to binary. Show your working. [2]",
+      "expectedSchema": {
+        "question": "string",
+        "marks": "number",
+        "topic": "string",
+        "difficulty": "string"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "llm-eval-framework",
+  "version": "1.0.0",
+  "description": "LLM output evaluation framework. Define eval specs in JSON, run against any OpenAI-compatible endpoint, get scored pass/fail results. Built for the Question Bank extraction pipeline.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/verdiz8/llm-eval-framework"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "llm-eval": "./dist/runner/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/runner/cli.ts",
+    "test": "jest",
+    "eval": "tsx src/runner/cli.ts",
+    "eval:qbank": "tsx src/runner/cli.ts run ./src/specs/question-bank-extraction.json",
+    "eval:sentiment": "tsx src/runner/cli.ts run ./src/specs/sentiment-analysis.json",
+    "eval:all": "npm run eval:qbank && npm run eval:sentiment"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
